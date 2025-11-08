@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaClient } from '@generated/client';
+import { PrismaClient } from '../generated/client';
 
 export interface VacancyFilters {
   page: number;
