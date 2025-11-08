@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, MapPin, DollarSign, Clock, Building, Calendar } from 'lucide-react';
+import { Search, MapPin, DollarSign, Clock, Building, Calendar, Menu } from 'lucide-react';
+import { Button, Card, CardContent, CardHeader, CardTitle, Badge, Input } from '@credo-s/design-system';
+import { useRouter } from 'next/navigation';
 
 interface Vacancy {
   id: number;
@@ -20,11 +22,13 @@ interface Vacancy {
 }
 
 export default function VacanciesPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [area, setArea] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<Vacancy[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -106,11 +110,63 @@ export default function VacanciesPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800">
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Навигация</h2>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
+
+        <nav className="p-4 space-y-2">
+          <a
+            href="/"
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <Search className="w-5 h-5" />
+            <span>Главная</span>
+          </a>
+
+          <a
+            href="/vacancies"
+            className="flex items-center gap-3 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg transition-colors"
+          >
+            <Building className="w-5 h-5" />
+            <span>Вакансии</span>
+          </a>
+
+          <a
+            href="/resumes"
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <User className="w-5 h-5" />
+            <span>Резюме</span>
+          </a>
+        </nav>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       {/* Header */}
       <header className="border-b bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+              </button>
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
                   <Search className="w-4 h-4 text-white" />
@@ -159,51 +215,49 @@ export default function VacanciesPage() {
           <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div className="space-y-2">
-                <label htmlFor="search" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="search" className="block text-sm font-medium">
                   Ключевые слова
                 </label>
-                <input
+                <Input
                   id="search"
                   type="text"
                   placeholder="React разработчик"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="area" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor="area" className="block text-sm font-medium">
                   Город/Регион
                 </label>
-                <input
+                <Input
                   id="area"
                   type="text"
                   placeholder="Москва"
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div className="flex items-end">
-                <button
+                <Button
                   onClick={handleSearch}
                   disabled={isLoading || !searchQuery.trim()}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+                  className="w-full"
                 >
                   {isLoading ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                       Поиск...
                     </>
                   ) : (
                     <>
-                      <Search className="w-4 h-4" />
+                      <Search className="w-4 h-4 mr-2" />
                       Найти
                     </>
                   )}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -221,14 +275,14 @@ export default function VacanciesPage() {
 
             <div className="space-y-4">
               {results.map((vacancy) => (
-                <div key={vacancy.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="p-6">
+                <Card key={vacancy.id}>
+                  <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        <h4 className="text-xl font-semibold mb-2">
                           {vacancy.name}
                         </h4>
-                        <div className="flex items-center gap-4 text-gray-600 dark:text-gray-300 mb-2">
+                        <div className="flex items-center gap-4 text-muted-foreground mb-2">
                           <div className="flex items-center gap-1">
                             <Building className="w-4 h-4" />
                             <span>{vacancy.employer.name}</span>
@@ -238,7 +292,7 @@ export default function VacanciesPage() {
                             <span>{vacancy.areaName}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             <span>Опубликовано: {formatDate(vacancy.publishedAt)}</span>
@@ -253,26 +307,22 @@ export default function VacanciesPage() {
                         <div className="text-lg font-semibold text-green-600 dark:text-green-400 mb-1">
                           {formatSalary(vacancy.salaryFrom, vacancy.salaryTo, vacancy.currency)}
                         </div>
-                        <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                          vacancy.isActive
-                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                        }`}>
+                        <Badge variant={vacancy.isActive ? "default" : "destructive"}>
                           {vacancy.isActive ? 'Активна' : 'Закрыта'}
-                        </div>
+                        </Badge>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         ID: {vacancy.id}
                       </div>
-                      <button className="text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 font-medium transition-colors">
+                      <Button variant="ghost" size="sm">
                         Подробнее →
-                      </button>
+                      </Button>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>

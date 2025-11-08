@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, Zap, TrendingUp, LogIn, LogOut, User, Building, FileText, Menu, X } from 'lucide-react';
+import { Button, Card, CardContent, CardHeader, CardTitle, CardDescription, Badge } from '@credo-s/design-system';
 
 interface Vacancy {
   id: number;
@@ -279,35 +280,47 @@ export default function Home() {
 
         {/* Features */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 text-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Search className="w-6 h-6 text-white" />
-            </div>
-            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Умный поиск</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              AI-powered поиск вакансий с учетом ваших навыков и предпочтений
-            </p>
-          </div>
+          <Card>
+            <CardHeader className="text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Search className="w-6 h-6 text-white" />
+              </div>
+              <CardTitle>Умный поиск</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-sm text-muted-foreground">
+                AI-powered поиск вакансий с учетом ваших навыков и предпочтений
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 text-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Быстрый парсинг</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Мгновенный анализ тысяч вакансий с фильтрацией по критериям
-            </p>
-          </div>
+          <Card>
+            <CardHeader className="text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <CardTitle>Быстрый парсинг</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Мгновенный анализ тысяч вакансий с фильтрацией по критериям
+              </p>
+            </CardContent>
+          </Card>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 text-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="w-6 h-6 text-white" />
-            </div>
-            <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Аналитика рынка</h4>
-            <p className="text-sm text-gray-600 dark:text-gray-300">
-              Статистика зарплат и тренды по технологиям в реальном времени
-            </p>
-          </div>
+          <Card>
+            <CardHeader className="text-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <CardTitle>Аналитика рынка</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Статистика зарплат и тренды по технологиям в реальном времени
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </main>
 
