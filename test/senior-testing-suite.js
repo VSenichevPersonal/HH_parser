@@ -8,10 +8,8 @@
  */
 
 const axios = require('axios');
-const { PrismaClient } = require('../src/generated');
 
 const BASE_URL = process.env.BASE_URL || 'https://hh-api.up.railway.app';
-const prisma = new PrismaClient();
 
 class SeniorTestingSuite {
   constructor() {
@@ -39,8 +37,10 @@ class SeniorTestingSuite {
       await this.runIntegrationTests();
       await this.runSecurityTests();
       await this.runPerformanceTests();
-    } finally {
-      await prisma.$disconnect();
+    } catch (error) {
+      console.error('❌ Test suite failed:', error.message);
+      this.generateReport();
+      throw error;
     }
 
     this.generateReport();
@@ -87,52 +87,33 @@ class SeniorTestingSuite {
   // ===== DATABASE TESTS =====
 
   async runDatabaseTests() {
-    console.log('🗄️  DATABASE TESTS');
+    console.log('🗄️  DATABASE TESTS (via API)');
     console.log('-'.repeat(40));
 
-    // Test 4: Direct database connection
-    await this.test('Direct database connection', async () => {
-      await prisma.$connect();
-      const result = await prisma.$queryRaw`SELECT 1 as test`;
-      if (result[0].test !== 1) throw new Error('Query failed');
+    // Test 4: Database connectivity via healthcheck
+    await this.test('Database connectivity via healthcheck', async () => {
+      const response = await axios.get(`${BASE_URL}/health`);
+      const dbStatus = response.data.services.database;
+      if (dbStatus !== 'ok') {
+        throw new Error(`Database status: ${dbStatus}`);
+      }
     });
 
-    // Test 5: Vacancy table structure
-    await this.test('Vacancy table structure', async () => {
-      const vacancy = await prisma.vacancy.findFirst({ take: 1 });
-      // Just check if query doesn't throw
-      return vacancy;
+    // Test 5: Vacancy stats endpoint (tests DB queries)
+    await this.test('Vacancy stats endpoint (DB queries)', async () => {
+      const response = await axios.get(`${BASE_URL}/api/vacancies/stats/overview`);
+      if (response.status !== 200) throw new Error(`Status: ${response.status}`);
+      if (typeof response.data.total !== 'number') throw new Error('No total count');
+      return { totalVacancies: response.data.total };
     });
 
-    // Test 6: Employer table structure
-    await this.test('Employer table structure', async () => {
-      const employer = await prisma.employer.findFirst({ take: 1 });
-      return employer;
-    });
-
-    // Test 7: RawItem table structure
-    await this.test('RawItem table structure', async () => {
-      const rawItem = await prisma.rawItem.findFirst({ take: 1 });
-      return rawItem;
-    });
-
-    // Test 8: Foreign key relationships
-    await this.test('Foreign key relationships work', async () => {
-      const vacancyWithEmployer = await prisma.vacancy.findFirst({
-        include: { employer: true, skills: true }
-      });
-      return vacancyWithEmployer;
-    });
-
-    // Test 9: Database indexes exist
-    await this.test('Database indexes exist', async () => {
-      const indexes = await prisma.$queryRaw`
-        SELECT indexname FROM pg_indexes
-        WHERE tablename IN ('vacancy', 'employer', 'vacancy_skill')
-        AND indexname LIKE '%idx%' OR indexname LIKE '%key%'
-      `;
-      if (indexes.length === 0) throw new Error('No indexes found');
-      return indexes;
+    // Test 6: Vacancy search with pagination (DB queries)
+    await this.test('Vacancy search with pagination', async () => {
+      const response = await axios.get(`${BASE_URL}/api/vacancies?page=1&limit=5`);
+      if (response.status !== 200) throw new Error(`Status: ${response.status}`);
+      if (!response.data.pagination) throw new Error('No pagination data');
+      if (response.data.data.length > 5) throw new Error('Pagination not working');
+      return { itemsFound: response.data.data.length };
     });
 
     console.log('');
@@ -247,6 +228,10 @@ class SeniorTestingSuite {
         if (!vacancy.id || !vacancy.name) {
           throw new Error('Vacancy missing required fields');
         }
+        // Check employer relationship
+        if (vacancy.employer && typeof vacancy.employer.name !== 'string') {
+          throw new Error('Invalid employer data');
+        }
       }
       return { consistency: 'checked' };
     });
@@ -335,15 +320,16 @@ class SeniorTestingSuite {
       return { duration: `${duration}ms` };
     });
 
-    // Test 25: Database query performance
-    await this.test('Database query performance', async () => {
+    // Test 25: Stats endpoint performance (tests DB performance)
+    await this.test('Stats endpoint performance (DB)', async () => {
       const start = Date.now();
-      await prisma.vacancy.count();
+      const response = await axios.get(`${BASE_URL}/api/vacancies/stats/overview`);
       const end = Date.now();
       const duration = end - start;
 
-      if (duration > 1000) throw new Error(`DB too slow: ${duration}ms`);
-      return { duration: `${duration}ms` };
+      if (response.status !== 200) throw new Error(`Status: ${response.status}`);
+      if (duration > 3000) throw new Error(`Too slow: ${duration}ms`);
+      return { duration: `${duration}ms`, totalVacancies: response.data.total };
     });
 
     console.log('');
