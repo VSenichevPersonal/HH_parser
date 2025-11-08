@@ -53,6 +53,8 @@ model RawItem {
   payload   Json
   fetchedAt DateTime @default(now())
 
+  resumes Resume[]
+
   @@id([source, hhId])
 }
 
