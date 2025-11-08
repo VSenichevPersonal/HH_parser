@@ -1,5 +1,5 @@
--- CreateTable
-CREATE TABLE "resume" (
+-- CreateTable (with IF NOT EXISTS)
+CREATE TABLE IF NOT EXISTS "resume" (
     "id" TEXT NOT NULL,
     "title" TEXT,
     "areaId" INTEGER,
@@ -14,16 +14,16 @@ CREATE TABLE "resume" (
     CONSTRAINT "resume_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
-CREATE TABLE "resume_skill" (
+-- CreateTable (with IF NOT EXISTS)
+CREATE TABLE IF NOT EXISTS "resume_skill" (
     "resumeId" TEXT NOT NULL,
     "skillName" TEXT NOT NULL,
 
     CONSTRAINT "resume_skill_pkey" PRIMARY KEY ("resumeId","skillName")
 );
 
--- CreateTable
-CREATE TABLE "resume_view_audit" (
+-- CreateTable (with IF NOT EXISTS)
+CREATE TABLE IF NOT EXISTS "resume_view_audit" (
     "id" TEXT NOT NULL,
     "resumeId" TEXT NOT NULL,
     "viewedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -33,14 +33,47 @@ CREATE TABLE "resume_view_audit" (
     CONSTRAINT "resume_view_audit_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "resume_rawSource_rawId_key" ON "resume"("rawSource", "rawId");
+-- CreateIndex (with IF NOT EXISTS)
+CREATE UNIQUE INDEX IF NOT EXISTS "resume_rawSource_rawId_key" ON "resume"("rawSource", "rawId");
 
--- AddForeignKey
-ALTER TABLE "resume" ADD CONSTRAINT "resume_rawSource_rawId_fkey" FOREIGN KEY ("rawSource", "rawId") REFERENCES "raw_item"("source", "hhId") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- AddForeignKey (only if constraint doesn't exist)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'resume_rawSource_rawId_fkey'
+        AND table_name = 'resume'
+    ) THEN
+        ALTER TABLE "resume" ADD CONSTRAINT "resume_rawSource_rawId_fkey"
+        FOREIGN KEY ("rawSource", "rawId") REFERENCES "raw_item"("source", "hhId")
+        ON DELETE RESTRICT ON UPDATE CASCADE;
+    END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "resume_skill" ADD CONSTRAINT "resume_skill_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (only if constraint doesn't exist)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'resume_skill_resumeId_fkey'
+        AND table_name = 'resume_skill'
+    ) THEN
+        ALTER TABLE "resume_skill" ADD CONSTRAINT "resume_skill_resumeId_fkey"
+        FOREIGN KEY ("resumeId") REFERENCES "resume"("id")
+        ON DELETE CASCADE ON UPDATE CASCADE;
+    END IF;
+END $$;
 
--- AddForeignKey
-ALTER TABLE "resume_view_audit" ADD CONSTRAINT "resume_view_audit_resumeId_fkey" FOREIGN KEY ("resumeId") REFERENCES "resume"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+-- AddForeignKey (only if constraint doesn't exist)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'resume_view_audit_resumeId_fkey'
+        AND table_name = 'resume_view_audit'
+    ) THEN
+        ALTER TABLE "resume_view_audit" ADD CONSTRAINT "resume_view_audit_resumeId_fkey"
+        FOREIGN KEY ("resumeId") REFERENCES "resume"("id")
+        ON DELETE CASCADE ON UPDATE CASCADE;
+    END IF;
+END $$;
