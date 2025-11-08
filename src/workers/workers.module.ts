@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { VacancyCollectorService } from './vacancy-collector.service';
-import { HhModule } from '../hh/hh.module';
+import { HHModule } from '../hh/hh.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    HhModule,
+    HHModule,
   ],
   providers: [VacancyCollectorService],
   exports: [VacancyCollectorService],

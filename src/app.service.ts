@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '../src/generated';
+import { PrismaClient } from './generated';
 
 @Injectable()
 export class AppService {
@@ -18,8 +18,8 @@ export class AppService {
       status: 'ok',
       timestamp: new Date().toISOString(),
       services: {
-        database: { status: 'unknown', details: null },
-        redis: { status: 'unknown', details: null },
+        database: { status: 'unknown', details: null as string | null },
+        redis: { status: 'unknown', details: null as string | null },
       },
     };
 

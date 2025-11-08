@@ -24,6 +24,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:senior": "node test/senior-testing-suite.js",
     "install:all": "npm install && cd frontend && npm install",
     "create-admin": "ts-node scripts/create-admin-user.ts"
   },
@@ -31,6 +32,7 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.1",
+    "@nestjs/schedule": "^4.1.1",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.19.0",
