@@ -49,7 +49,7 @@ model VacancySkill {
 
 model RawItem {
   source    String
-  hhId      BigInt
+  hhId      String // Changed to String to support both vacancy IDs (bigint) and resume IDs (text)
   payload   Json
   fetchedAt DateTime @default(now())
 
@@ -70,4 +70,66 @@ model User {
   emailVerified Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+// Resume-related models
+model ManagerToken {
+  managerId     BigInt    @id
+  accessToken   String
+  refreshToken  String?
+  dailyLimit    Int       @default(200)
+  usedToday     Int       @default(0)
+  lastReset     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  resumeAudits  ResumeViewAudit[]
+}
+
+model Resume {
+  id               String     @id
+  title            String?
+  areaId           Int?
+  areaName         String?
+  experienceYears  Int?
+  salaryDesired    Decimal?
+  currency         String?
+  updatedAt        DateTime?
+  rawSource        String     // source from raw_item (e.g., "resume")
+  rawId            String     // hhId from raw_item
+  rawItem          RawItem    @relation(fields: [rawSource, rawId], references: [source, hhId])
+
+  skills           ResumeSkill[]
+  viewAudits       ResumeViewAudit[]
+
+  @@unique([rawSource, rawId])
+}
+
+model ResumeSkill {
+  resumeId  String
+  resume    Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  skillName String
+
+  @@id([resumeId, skillName])
+}
+
+model ResumeViewAudit {
+  id        BigInt       @id @default(autoincrement())
+  managerId BigInt
+  manager   ManagerToken @relation(fields: [managerId], references: [managerId])
+  resumeId  String
+  resume    Resume       @relation(fields: [resumeId], references: [id])
+  viewedAt  DateTime     @default(now())
+}
+
+// Search profiles for both vacancies and resumes
+model SearchProfile {
+  id           String   @id @default(uuid())
+  name         String
+  entityType   String   // "vacancy" or "resume"
+  params       Json     // HH API query parameters
+  enabled      Boolean  @default(true)
+  scheduleCron String   @default("30 2 * * *") // Default: 02:30 daily
+  lastRun      DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
