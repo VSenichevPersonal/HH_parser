@@ -52,6 +52,13 @@ class ApiClient {
   async getVacancies(): Promise<unknown[]> {
     return this.request('/vacancies');
   }
+
+  async login(email: string, password: string): Promise<{ access_token: string; user: any }> {
+    return this.request('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

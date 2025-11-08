@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Search, Zap, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, Zap, TrendingUp, LogIn, LogOut, User } from 'lucide-react';
 
 interface Vacancy {
   id: number;
@@ -14,9 +15,26 @@ interface Vacancy {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<Vacancy[]>([]);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Проверяем, залогинен ли пользователь
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    setUser(null);
+    router.push('/login');
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -71,10 +89,44 @@ export default function Home() {
                 Powered by Credo-S
               </span>
             </div>
-            <div className="flex gap-1">
-              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-              <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+            <div className="flex items-center gap-4">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-cyan-100 dark:bg-cyan-900 rounded-lg">
+                    <User className="w-4 h-4 text-cyan-700 dark:text-cyan-300" />
+                    <span className="text-sm font-medium text-cyan-800 dark:text-cyan-200">
+                      {user.email}
+                    </span>
+                    {user.role === 'superadmin' && (
+                      <span className="px-2 py-0.5 bg-cyan-600 text-white text-xs rounded-full">
+                        Admin
+                      </span>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Выйти
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  </div>
+                  <button
+                    onClick={() => router.push('/login')}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all"
+                  >
+                    <LogIn className="w-4 h-4" />
+                    Войти
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
