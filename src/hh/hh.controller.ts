@@ -1,11 +1,15 @@
 import { Controller, Get, Query, Param, UseGuards, Post, Body } from '@nestjs/common';
 import { HHService } from './hh.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { VacancyCollectorService } from '../workers/vacancy-collector.service';
 import type { VacancySearchParams, ResumeSearchParams } from './hh.service';
 
 @Controller('api/hh')
 export class HHController {
-  constructor(private readonly hhService: HHService) {}
+  constructor(
+    private readonly hhService: HHService,
+    private readonly vacancyCollector: VacancyCollectorService,
+  ) {}
 
   /**
    * Поиск вакансий (публичный API)
@@ -63,11 +67,18 @@ export class HHController {
   }
 
   /**
-   * Админ эндпоинт для ручного запуска парсинга
+   * Админ эндпоинт для ручного запуска сбора вакансий
    */
-  @Post('admin/run-parsing')
-  async runParsing(@Body() body: { profileId?: string; entityType: 'vacancy' | 'resume' }) {
-    // TODO: Реализовать запуск парсинга
-    return { message: 'Parsing started', profileId: body.profileId, entityType: body.entityType };
+  @Post('admin/run-vacancy-collection')
+  async runVacancyCollection(@Body() body?: { query?: string; maxPages?: number }) {
+    const result = await this.vacancyCollector.collectVacanciesManual(
+      body?.query,
+      body?.maxPages || 1
+    );
+
+    return {
+      message: 'Vacancy collection completed',
+      ...result,
+    };
   }
 }
