@@ -60,3 +60,13 @@ model SyncState {
   lastSeen   DateTime?
   page       Int     @default(0)
 }
+
+model User {
+  id            BigInt    @id @default(autoincrement())
+  email         String    @unique
+  password      String
+  role          String    @default("user") // "user", "admin", "superadmin"
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}

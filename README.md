@@ -23,24 +23,36 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+HH Parser - система для автоматического парсинга вакансий с HeadHunter с использованием искусственного интеллекта.
+
+**Бэкенд**: NestJS (TypeScript/Node.js) с Prisma ORM и PostgreSQL
+**Фронтенд**: Next.js с дизайн-системой [CredosDesignSys](https://github.com/VSenichevPersonal/CredosDesignSys)
 
 ## Project setup
 
 ```bash
-$ npm install
+# Установка всех зависимостей (бэкенд + фронтенд)
+$ npm run install:all
+
+# Или отдельно:
+$ npm install                    # бэкенд
+$ cd frontend && npm install     # фронтенд
 ```
 
 ## Compile and run the project
 
 ```bash
-# development
-$ npm run start
+# Запуск всего проекта (бэкенд + фронтенд)
+$ npm run start:all
 
-# watch mode
+# Или отдельно:
+# Бэкенд
 $ npm run start:dev
 
-# production mode
+# Фронтенд
+$ npm run start:frontend
+
+# Продакшн
 $ npm run start:prod
 ```
 
