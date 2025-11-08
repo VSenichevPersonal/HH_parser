@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "type": "commonjs",
   "scripts": {
-    "build": "npx prisma generate && nest build && cp -r src/generated dist/generated 2>/dev/null || true",
+    "build": "npx prisma generate && nest build",
     "build:frontend": "cd frontend && npm run build",
     "build:all": "npm run build && npm run build:frontend",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
