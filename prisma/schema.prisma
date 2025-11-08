@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employer {
+  id   BigInt @id
+  name String
+
+  vacancies Vacancy[]
+}
+
+model Vacancy {
+  id                 BigInt     @id
+  name               String
+  description        String?
+  employerId         BigInt?
+  employer           Employer?  @relation(fields: [employerId], references: [id])
+  areaId             BigInt?
+  publishedAt        DateTime?
+  archived           Boolean    @default(false)
+  url                String?
+  salaryFrom         Decimal?
+  salaryTo           Decimal?
+  currency           String?
+  professionalRoles  Json?
+  experience         Json?
+  updatedAt          DateTime?  @updatedAt
+  tsv                Unsupported("tsvector")?
+
+  skills VacancySkill[]
+}
+
+model VacancySkill {
+  vacancyId  BigInt
+  skillName  String
+  vacancy    Vacancy @relation(fields: [vacancyId], references: [id], onDelete: Cascade)
+
+  @@id([vacancyId, skillName])
+}
+
+model RawItem {
+  source    String
+  hhId      BigInt
+  payload   Json
+  fetchedAt DateTime @default(now())
+
+  @@id([source, hhId])
+}
+
+model SyncState {
+  source     String @id
+  lastSeen   DateTime?
+  page       Int     @default(0)
+}
