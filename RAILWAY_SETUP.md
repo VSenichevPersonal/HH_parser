@@ -15,18 +15,33 @@
    - `USER_AGENT`
    - `TOPIC_QUERY`
 
-## ⚠️ Требуется ручное действие
+## ✅ Код запушен в GitHub
 
-### Удаление лишних сервисов
+Код успешно отправлен в репозиторий: https://github.com/VSenichevPersonal/HH_parser
 
-Railway CLI не поддерживает удаление сервисов напрямую. Выполните через Dashboard:
+## ⚠️ Требуется настройка в Railway Dashboard
+
+### 1. Связывание сервиса hh-api с GitHub репозиторием
 
 1. Откройте [Railway Dashboard](https://railway.com/project/f40aac02-bab3-412e-a39f-318408c3508b)
-2. Найдите все Postgres сервисы
-3. Удалите лишние (оставьте один, например, самый первый созданный)
-4. Найдите все Redis сервисы  
-5. Удалите лишние (оставьте один)
-6. Railway автоматически создаст `DATABASE_URL` и `REDIS_URL` для сервиса `hh-api`
+2. Выберите сервис **hh-api**
+3. Перейдите в раздел **Settings** → **Source**
+4. Нажмите **Connect Repo** или **Change Source**
+5. Выберите репозиторий **VSenichevPersonal/HH_parser**
+6. Выберите ветку **main**
+7. Railway автоматически начнет деплой из GitHub
+
+### 2. Связывание Postgres с сервисом hh-api
+
+Railway автоматически создает переменные для связанных сервисов, но нужно убедиться, что Postgres связан:
+
+1. В Dashboard выберите сервис **Postgres**
+2. Перейдите в раздел **Variables**
+3. Скопируйте значение `DATABASE_URL` или `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `PGHOST`, `PGPORT`
+4. Перейдите в сервис **hh-api** → **Variables**
+5. Добавьте переменную `DATABASE_URL` с значением из Postgres (или Railway автоматически создаст её, если сервисы в одном проекте)
+
+**Альтернатива:** Railway должен автоматически создать `DATABASE_URL` для всех сервисов в проекте, если Postgres развернут в том же проекте. Проверьте переменные через CLI.
 
 ### Проверка переменных
 
