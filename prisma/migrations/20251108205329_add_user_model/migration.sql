@@ -1,5 +1,5 @@
--- CreateTable
-CREATE TABLE "user" (
+-- CreateTable (with IF NOT EXISTS check)
+CREATE TABLE IF NOT EXISTS "user" (
     "id" BIGSERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
@@ -11,6 +11,6 @@ CREATE TABLE "user" (
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+-- CreateIndex (with IF NOT EXISTS check)
+CREATE UNIQUE INDEX IF NOT EXISTS "user_email_key" ON "user"("email");
 

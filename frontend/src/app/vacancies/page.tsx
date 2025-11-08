@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Search, MapPin, DollarSign, Clock, Building, Calendar, Menu } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge, Input } from '@credo-s/design-system';
 import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api';
 
 interface Vacancy {
   id: number;
@@ -43,9 +44,39 @@ export default function VacanciesPage() {
 
     setIsLoading(true);
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      // Используем реальный API HH через наш backend
+      const params: Record<string, any> = {
+        text: searchQuery,
+        per_page: 20,
+        page: 0,
+        order_by: 'publication_time',
+      };
 
-      // For now, use mock data since backend API isn't fully implemented
+      if (area) {
+        params.area = area;
+      }
+
+      const response = await apiClient.searchVacancies(params);
+
+      // Преобразуем данные HH API в формат для отображения
+      const formattedResults = response.items.map((item: any) => ({
+        id: parseInt(item.id),
+        name: item.name,
+        employer: item.employer,
+        areaId: parseInt(item.area.id),
+        areaName: item.area.name,
+        salaryFrom: item.salary?.from,
+        salaryTo: item.salary?.to,
+        currency: item.salary?.currency || 'RUR',
+        publishedAt: item.published_at,
+        updatedAt: item.updated_at || item.published_at,
+        isActive: !item.archived,
+      }));
+
+      setResults(formattedResults);
+    } catch (error) {
+      console.error('Search failed:', error);
+      // Fallback to mock data on error
       const mockResults = [
         {
           id: 12345678,
@@ -60,31 +91,8 @@ export default function VacanciesPage() {
           updatedAt: '2024-11-08T10:00:00Z',
           isActive: true,
         },
-        {
-          id: 87654321,
-          name: 'Fullstack Developer',
-          employer: { name: 'StartupXYZ' },
-          areaId: 2,
-          areaName: 'Санкт-Петербург',
-          salaryFrom: 200000,
-          salaryTo: 300000,
-          currency: 'RUR',
-          publishedAt: '2024-11-07T15:30:00Z',
-          updatedAt: '2024-11-07T15:30:00Z',
-          isActive: true,
-        }
       ];
-
-      // Filter mock results based on search
-      const filteredResults = mockResults.filter(vacancy =>
-        vacancy.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        vacancy.employer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (area && vacancy.areaName.toLowerCase().includes(area.toLowerCase()))
-      );
-
-      setResults(filteredResults);
-    } catch (error) {
-      console.error('Search failed:', error);
+      setResults(mockResults);
     } finally {
       setIsLoading(false);
     }

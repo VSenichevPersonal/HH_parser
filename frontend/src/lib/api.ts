@@ -59,6 +59,28 @@ class ApiClient {
       body: JSON.stringify({ email, password }),
     });
   }
+
+  // HH API methods
+  async searchVacancies(params: Record<string, any> = {}): Promise<any> {
+    const queryString = new URLSearchParams(params).toString();
+    return this.request(`/api/hh/vacancies?${queryString}`);
+  }
+
+  async getVacancy(id: string): Promise<any> {
+    return this.request(`/api/hh/vacancies/${id}`);
+  }
+
+  async getAreas(): Promise<any[]> {
+    return this.request('/api/hh/areas');
+  }
+
+  async getSpecializations(): Promise<any[]> {
+    return this.request('/api/hh/specializations');
+  }
+
+  async getProfessionalRoles(): Promise<any[]> {
+    return this.request('/api/hh/professional-roles');
+  }
 }
 
 export const apiClient = new ApiClient();
