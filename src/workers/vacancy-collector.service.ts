@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaClient } from '@prisma/client-generated';
+import { PrismaClient } from '../../node_modules/.prisma/client-generated';
 import { HHService } from '../hh/hh.service';
 
 @Injectable()
