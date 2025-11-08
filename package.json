@@ -5,6 +5,7 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "type": "commonjs",
   "scripts": {
     "build": "npx prisma generate && nest build && cp -r src/generated dist/generated 2>/dev/null || true",
     "build:frontend": "cd frontend && npm run build",
