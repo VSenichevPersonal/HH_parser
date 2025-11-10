@@ -1,8 +1,13 @@
-# Use Node.js 20 Alpine as base image (required for NestJS 11+) - Force rebuild v3
+# Use Node.js 20 Alpine as base image (required for NestJS 11+) - Force rebuild v4
 FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
+
+# Force no cache for all subsequent steps
+ENV DOCKER_BUILDKIT=0
+# Add timestamp to force rebuild
+RUN echo "Build timestamp: $(date)" > /tmp/build-timestamp
 
 # Copy package files
 COPY package*.json ./
