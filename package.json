@@ -15,7 +15,7 @@
     "start:dev": "nest start --watch",
     "start:frontend": "cd frontend && npm run dev",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "(node scripts/fix-failed-migrations.js || echo 'Migration fix failed, continuing...') && (npx prisma migrate deploy || echo 'Migration deploy failed, continuing...') && node dist/main",
+    "start:prod": "node dist/main",
     "start:all": "concurrently \"npm run start:dev\" \"npm run start:frontend\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:frontend": "cd frontend && npm run lint",
