@@ -22,15 +22,10 @@ export class VacancyController {
     const pageNum = parseInt(page, 10) || 1;
     const limitNum = parseInt(limit, 10) || 20;
 
-    return this.vacancyService.findVacancies({
+    return this.vacancyService.searchVacancies({
       page: pageNum,
       limit: limitNum,
       query,
-      area: area ? parseInt(area, 10) : undefined,
-      employer,
-      experience,
-      salaryFrom: salaryFrom ? parseFloat(salaryFrom) : undefined,
-      salaryTo: salaryTo ? parseFloat(salaryTo) : undefined,
     });
   }
 
@@ -39,7 +34,7 @@ export class VacancyController {
    */
   @Get(':id')
   async getVacancy(@Param('id') id: string) {
-    return this.vacancyService.findVacancyById(id);
+    return this.vacancyService.getVacancyById(id);
   }
 
   /**
