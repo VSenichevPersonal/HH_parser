@@ -13,8 +13,7 @@ RUN npm ci && npm cache clean --force
 # Copy source code
 COPY . .
 
-# Clean and generate Prisma client
-RUN rm -rf node_modules/@prisma && npx prisma generate
+# Prisma client is pre-generated in the image
 
 # Build the application
 RUN npm run build
