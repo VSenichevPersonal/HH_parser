@@ -23,11 +23,11 @@ export class AppService {
       },
     };
 
-    // Проверяем подключение к PostgreSQL
-    try {
-      await this.prisma.$queryRaw`SELECT 1 as test`;
-      health.services.database = { status: 'ok', details: 'Connected to PostgreSQL' };
-    } catch (error) {
+           // Проверяем подключение к PostgreSQL
+           try {
+             await this.prisma.$queryRaw('SELECT 1 as test');
+             health.services.database = { status: 'ok', details: 'Connected to PostgreSQL' };
+           } catch (error) {
       health.services.database = { status: 'error', details: error.message };
       health.status = 'error';
     }
