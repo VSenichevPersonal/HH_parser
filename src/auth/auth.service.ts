@@ -1,35 +1,22 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
-const prisma = new PrismaClient();
 
 @Injectable()
 export class AuthService {
   constructor(private jwtService: JwtService) {}
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      throw new UnauthorizedException('Неверный email или пароль');
+    // Mock authentication - always return a test user
+    if (email === 'test@example.com' && password === 'password') {
+      return {
+        id: 1,
+        email: 'test@example.com',
+        role: 'admin',
+        emailVerified: true,
+      };
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Неверный email или пароль');
-    }
-
-    if (!user.emailVerified) {
-      throw new UnauthorizedException('Email не подтвержден');
-    }
-
-    const { password: _, ...result } = user;
-    return result;
+    throw new UnauthorizedException('Authentication temporarily disabled for Railway testing');
   }
 
   async login(user: any) {
