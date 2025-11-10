@@ -13,6 +13,9 @@ RUN npm ci && npm cache clean --force
 # Copy source code
 COPY . .
 
+# Clean any existing dist directory
+RUN rm -rf dist
+
 # Prisma client is pre-generated in the image
 
 # Build the application
