@@ -1,12 +1,10 @@
 import { Controller, Get, Query, Param, Post, Body } from '@nestjs/common';
 import { HHService } from './hh.service';
-import { VacancyCollectorService } from '../workers/vacancy-collector.service';
 
 @Controller('api/hh')
 export class HHController {
   constructor(
     private readonly hhService: HHService,
-    private readonly vacancyCollector: VacancyCollectorService,
   ) {}
 
   /**
@@ -34,11 +32,10 @@ export class HHController {
   }
 
   /**
-   * Ручной запуск сбора вакансий (админ функция)
+   * Ручной запуск сбора вакансий (админ функция) - temporarily disabled
    */
   @Post('admin/run-vacancy-collection')
   async runVacancyCollection(@Body() body: { query?: string; maxPages?: number }) {
-    const result = await this.vacancyCollector.collectVacanciesManual(body.query, body.maxPages);
-    return result;
+    return { message: 'Vacancy collection temporarily disabled for Railway testing' };
   }
 }
